@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './App.css';
+import { TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Container } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 function App() {
   const [task, setTask] = useState({title: '', date: '', priority: ''});
@@ -28,22 +29,54 @@ function App() {
   const sortedTasks = tasks.sort((a,b) => new Date(b.date) - new Date(a.date) || b.priority - a.priority);
 
   return (
-    <div className="App">
+    <Container maxWidth="sm">
       <form onSubmit={addTask}>
-        <input name="title" value={task.title} onChange={handleChange} placeholder="Task" required/>
-        <input type="date" name="date" value={task.date} onChange={handleChange} required/>
-        <input type="number" name="priority" value={task.priority} onChange={handleChange} placeholder="Priority" required/>
-        <button type="submit">Add Task</button>
+        <TextField 
+          name="title" 
+          value={task.title} 
+          onChange={handleChange} 
+          placeholder="Task" 
+          required 
+          fullWidth 
+          style={{ margin: "10px 0" }}
+        />
+        <TextField 
+          type="date" 
+          name="date" 
+          value={task.date} 
+          onChange={handleChange} 
+          required 
+          fullWidth 
+          style={{ margin: "10px 0" }}
+        />
+        <TextField 
+          type="number" 
+          name="priority" 
+          value={task.priority} 
+          onChange={handleChange} 
+          placeholder="Priority" 
+          required 
+          fullWidth 
+          style={{ margin: "10px 0" }}
+        />
+        <Button variant="contained" color="primary" type="submit">Add Task</Button>
       </form>
-      {sortedTasks.map((task, index) => (
-        <div key={index}>
-          <h3>{task.title}</h3>
-          <p>{new Date(task.date).toDateString()}</p>
-          <p>{task.priority}</p>
-          <button onClick={() => removeTask(index)}>Remove Task</button>
-        </div>
-      ))}
-    </div>
+      <List>
+        {sortedTasks.map((task, index) => (
+          <ListItem key={index}>
+            <ListItemText 
+              primary={task.title} 
+              secondary={`Date: ${new Date(task.date).toDateString()}, Priority: ${task.priority}`} 
+            />
+            <ListItemSecondaryAction>
+              <IconButton edge="end" aria-label="delete" onClick={() => removeTask(index)}>
+                <DeleteIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+    </Container>
   );
 }
 
