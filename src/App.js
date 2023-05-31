@@ -1,18 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Container } from '@mui/material';
 import Delete from '@mui/icons-material/Delete';
 import { useForm, Controller } from 'react-hook-form';
+import { createClient } from 'contentful-management';
+import * as dotenv from'dotenv'
+
+dotenv.config()
+
+const client = createClient({
+  accessToken: process.env.ACCESS_TOKEN // replace with your Access Token
+});
 
 function App() {
   const { handleSubmit, control, reset } = useForm();
   const [tasks, setTasks] = useState([]);
+  const [space, setSpace] = useState()
 
-  const onSubmit = data => {
-    setTasks([...tasks, data]);
-    reset();
-  };
+  useEffect(() => {
+    const getSpace = async () => {
+      const space = await client.getSpace(process.env.SPACE_ID)
+      setSpace(space)
+    }
+    getSpace()
+  }, [])
 
-  const removeTask = index => {
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if(space) {
+        const response = await space.getEntries({ content_type: 'task' });
+        setTasks(response.items.map(item => item.fields));
+      }
+    };
+    fetchTasks();
+  }, [space]);
+
+  const onSubmit = useCallback(
+    async data => {
+      const response = await space.createEntry('task', {
+        fields: data
+      });
+      setTasks([...tasks, response.fields]);
+      reset();
+  }, [space, reset, tasks])
+
+  const removeTask = async index => {
+    const task = tasks[index];
+    await client.deleteEntry(task.sys.id);
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
     setTasks(newTasks);
