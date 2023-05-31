@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Container } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Container } from '@mui/material';
+import Delete from '@mui/icons-material/Delete';
 
 function App() {
   const [task, setTask] = useState({title: '', date: '', priority: ''});
@@ -70,7 +70,7 @@ function App() {
             />
             <ListItemSecondaryAction>
               <IconButton edge="end" aria-label="delete" onClick={() => removeTask(index)}>
-                <DeleteIcon />
+                <Delete />
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
